@@ -27,7 +27,7 @@ const Post = () => {
     const token = localStorage.getItem('access'); 
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/posts/create/', {
+      const response = await fetch(`${BASE}/api/posts/create/`, {
         method: 'POST',
         // headers: {
           // If your backend is protected by JWT, this is mandatory

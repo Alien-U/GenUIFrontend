@@ -40,7 +40,7 @@ const CodeGenerator = () => {
 
   const openai = new OpenAI({
     apiKey: 'backend-handled',
-    baseURL: 'http://127.0.0.1:8000/api/nvidia-proxy',
+    baseURL: `${BASE}/api/nvidia-proxy`,
     dangerouslyAllowBrowser: true 
   });
 
