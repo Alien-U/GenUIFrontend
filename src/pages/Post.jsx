@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 const Post = () => {
+  const BASE = import.meta.env.VITE_API_BASE_URL;
   const [text, setText] = useState('');
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);

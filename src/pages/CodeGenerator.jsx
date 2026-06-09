@@ -15,7 +15,7 @@ import { toast } from 'react-toastify';
 // import "./Generator.css";
 // import Select
 const CodeGenerator = () => {
-
+  const BASE = import.meta.env.VITE_API_BASE_URL;
   const options = [
     { value: 'html-css', label: 'HTML + CSS' },
     { value: 'html-tailwind', label: 'HTML + Tailwind CSS' },
