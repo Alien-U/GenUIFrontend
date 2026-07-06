@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 
 const Post = () => {
-  const BASE = import.meta.env.VITE_API_BASE_URL;
   const [text, setText] = useState('');
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // basic validation
     if (!text && !image) {
       alert("Please add some text or an image.");
@@ -25,15 +24,15 @@ const Post = () => {
     }
 
     // 2. Retrieve JWT Token (Assuming it's stored in localStorage)
-    const token = localStorage.getItem('access'); 
+    const token = localStorage.getItem('access');
 
     try {
       const response = await fetch(`${BASE}/api/posts/create/`, {
         method: 'POST',
         // headers: {
-          // If your backend is protected by JWT, this is mandatory
-          // 'Authorization': `Bearer ${token}`,
-          // WARNING: Do NOT set 'Content-Type'. The browser handles it for FormData.
+        // If your backend is protected by JWT, this is mandatory
+        // 'Authorization': `Bearer ${token}`,
+        // WARNING: Do NOT set 'Content-Type'. The browser handles it for FormData.
         // },
         body: formData,
       });
@@ -61,81 +60,58 @@ const Post = () => {
   };
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.title}>New Post</h2>
-      <form onSubmit={handleSubmit} style={styles.form}>
-        
-        <div style={styles.inputGroup}>
-          <label style={styles.label}>Attachment</label>
-          <input 
-            id="imageInput"
-            type="file" 
-            accept="image/*" 
-            onChange={(e) => setImage(e.target.files[0])} 
-            style={styles.fileInput}
-          />
-        </div>
+    <div className="min-h-screen bg-slate-50/50 pt-24 pb-16 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-xl mx-auto bg-white p-8 rounded-2xl shadow-md border border-gray-200/80">
+        <h5 className="text-2xl font-extrabold text-gray-410 tracking-tight mb-2">New Component Post</h5>
+        <p className="text-gray-500 text-sm mb-6">Share your generated component and code with the gallery community</p>
 
-        <div style={styles.inputGroup}>
-          <label style={styles.label}>Content / Code</label>
-          <textarea
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="Paste your code or write a description..."
-            style={styles.textarea}
-          />
-        </div>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Attachment Preview</label>
+            <input 
+              id="imageInput"
+              type="file" 
+              accept="image/*" 
+              onChange={(e) => setImage(e.target.files[0])} 
+              disabled={loading}
+              className="w-full p-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all disabled:bg-gray-50 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-650 hover:file:bg-indigo-100 cursor-pointer file:cursor-pointer"
+            />
+          </div>
 
-        <button 
-          type="submit" 
-          disabled={loading}
-          style={{
-            ...styles.button, 
-            backgroundColor: loading ? '#a0aec0' : '#4a90e2',
-            cursor: loading ? 'not-allowed' : 'pointer'
-          }}
-        >
-          {loading ? 'Uploading...' : 'Post to Feed'}
-        </button>
-      </form>
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Content / Code</label>
+            <textarea
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder="Paste your component code or write a description..."
+              disabled={loading}
+              className="w-full min-h-[220px] p-4 font-mono text-xs sm:text-sm border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all disabled:bg-gray-50 disabled:text-gray-400 bg-slate-50 resize-y leading-relaxed"
+            />
+          </div>
+
+          <button 
+            type="submit" 
+            disabled={loading}
+            className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl text-white font-bold transition-all duration-300 shadow-md ${
+              loading 
+                ? "bg-indigo-400 cursor-not-allowed opacity-80" 
+                : "bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] cursor-pointer"
+            }`}
+          >
+            {loading ? (
+              <>
+                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Posting Component...
+              </>
+            ) : 'Post to Feed'}
+          </button>
+        </form>
+      </div>
     </div>
   );
 };
 
-const styles = {
-  container: { 
-    maxWidth: '500px', 
-    margin: '40px auto', 
-    padding: '25px', 
-    backgroundColor: '#fff',
-    borderRadius: '12px', 
-    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' 
-  },
-  title: { marginTop: 0, color: '#333', fontSize: '1.5rem' },
-  form: { display: 'flex', flexDirection: 'column', gap: '20px' },
-  inputGroup: { display: 'flex', flexDirection: 'column', gap: '8px' },
-  label: { fontWeight: '600', fontSize: '0.85rem', color: '#555', textTransform: 'uppercase' },
-  fileInput: { padding: '8px', border: '1px dashed #cbd5e0', borderRadius: '6px' },
-  textarea: { 
-    height: '180px', 
-    padding: '12px', 
-    fontFamily: '"Fira Code", monospace', 
-    fontSize: '13px', 
-    lineHeight: '1.5',
-    borderRadius: '6px', 
-    border: '1px solid #e2e8f0',
-    backgroundColor: '#f8fafc',
-    resize: 'vertical'
-  },
-  button: { 
-    padding: '12px', 
-    color: 'white', 
-    border: 'none', 
-    borderRadius: '6px', 
-    fontWeight: 'bold', 
-    fontSize: '1rem',
-    transition: 'background 0.2s'
-  }
-};
 export default Post;

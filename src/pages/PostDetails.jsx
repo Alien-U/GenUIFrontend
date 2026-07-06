@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useList } from "../context/ListContext";
 
@@ -8,7 +8,10 @@ function PostDetails() {
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { addToList } = useList();
+  const [adding, setAdding] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const { listItems, addToList, removeFromList } = useList();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch(`${BASEURL}/api/posts/${id}/`)
@@ -54,34 +57,56 @@ function PostDetails() {
     );
   }
 
-  const handleAddToList = () => {
+  const favoriteItem = listItems.find(item => item.post === post.id);
+  const isFavorite = !!favoriteItem;
+
+  const handleCopy = () => {
+    if (!post?.content) return;
+    navigator.clipboard.writeText(post.content);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleToggleFavorite = async () => {
     if (!localStorage.getItem("access_token")) {
-      window.location.href = "/login";
+      navigate("/login");
       return;
     }
-    addToList(post.id);
+    setAdding(true);
+    try {
+      if (isFavorite) {
+        await removeFromList(favoriteItem.id);
+      } else {
+        await addToList(post.id);
+      }
+      navigate("/list");
+    } catch (err) {
+      console.error("Error toggling list:", err);
+    } finally {
+      setAdding(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-slate-50/50 pt-24 pb-16 px-4 sm:px-6 lg:px-8">
       {/* Main Container */}
-      <div className="max-w-4xl mx-auto bg-white shadow-xl rounded-3xl overflow-hidden border border-gray-100">
+      <div className="max-w-4xl mx-auto bg-white shadow-md rounded-2xl overflow-hidden border border-gray-200/80">
         <div className="p-8 sm:p-12">
           
           {/* 1. Heading on Top */}
           <div className="mb-8 text-center sm:text-left">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 leading-tight mb-4 tracking-tight">
-              Copy the code for shown component
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 leading-tight mb-4 tracking-tight">
+              Component Details
             </h1>
             <div className="inline-block bg-green-50 px-4 py-1.5 rounded-full">
               <span className="text-green-700 font-semibold tracking-wide">
-                By {post.author}
+                By {post.author || "GenUi Creator"}
               </span>
             </div>
           </div>
 
           {/* 2. Image */}
-          <div className="mb-10 w-full overflow-hidden rounded-2xl shadow-sm border border-gray-100">
+          <div className="mb-10 w-full overflow-hidden rounded-2xl shadow-sm border border-gray-150">
             <img
               src={`${post.image}`}
               alt={post.name || "Post Image"}
@@ -89,25 +114,53 @@ function PostDetails() {
             />
           </div>
 
-          {/* 3. Content */}
+          {/* 3. Code Block Content */}
           <div className="mb-12">
-            <p className="text-lg text-gray-700 leading-relaxed whitespace-pre-wrap">
+            <div className="flex justify-between items-center bg-slate-900 border-b border-slate-800 px-5 py-3 rounded-t-2xl shadow-sm">
+              <span className="font-mono text-xs text-slate-400 font-bold uppercase tracking-wider">Source Code</span>
+              <button
+                onClick={handleCopy}
+                className="text-xs text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-750 hover:border-slate-600 px-3 py-1.5 rounded-lg transition-all font-semibold cursor-pointer active:scale-95"
+              >
+                {copied ? "Copied! ✓" : "Copy Code"}
+              </button>
+            </div>
+            <pre className="font-mono text-xs sm:text-sm text-slate-100 bg-slate-950 p-6 rounded-b-2xl whitespace-pre-wrap overflow-x-auto border-x border-b border-slate-900 leading-relaxed shadow-inner max-h-[600px] scrollbar-thin scrollbar-thumb-slate-800 select-all">
               {post.content}
-            </p>
+            </pre>
           </div>
 
           {/* 4. Actions & Navigation */}
           <div className="flex flex-col sm:flex-row items-center justify-between border-t border-gray-100 pt-8 gap-6">
             <button
-              onClick={handleAddToList}
-              className="w-full sm:w-auto flex items-center justify-center gap-2 bg-rose-50 text-rose-600 border border-rose-200 px-8 py-3.5 rounded-xl font-bold text-lg hover:bg-rose-100 hover:text-rose-700 hover:border-rose-300 transition-all shadow-sm active:scale-95"
+              onClick={handleToggleFavorite}
+              disabled={adding}
+              className={`w-full sm:w-auto flex items-center justify-center gap-2 border px-8 py-3.5 rounded-xl font-bold text-base transition-all shadow-sm ${
+                adding
+                  ? "bg-rose-100 text-rose-400 border-rose-200 cursor-not-allowed"
+                  : isFavorite
+                    ? "bg-rose-100 text-rose-700 border-rose-200 hover:bg-rose-200/60 hover:text-rose-800 hover:border-rose-300 active:scale-95 cursor-pointer"
+                    : "bg-rose-50 text-rose-600 border-rose-200 hover:bg-rose-100 hover:text-rose-700 hover:border-rose-300 active:scale-95 cursor-pointer"
+              }`}
             >
-              Add to Lists ❤️
+              {adding ? (
+                <>
+                  <svg className="animate-spin h-5 w-5 text-rose-500" xmlns="http://www.w3.org/2050/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Processing...
+                </>
+              ) : isFavorite ? (
+                <>Remove from Lists 💔</>
+              ) : (
+                <>Add to Lists ❤️</>
+              )}
             </button>
 
             <Link
               to="/"
-              className="group flex items-center text-gray-500 hover:text-blue-600 font-semibold transition-colors"
+              className="group flex items-center text-gray-500 hover:text-indigo-650 font-semibold transition-colors text-base"
             >
               <span className="mr-2 group-hover:-translate-x-1 transition-transform">
                 &larr;

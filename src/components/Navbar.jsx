@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useList } from '../context/ListContext.jsx';
 import { clearTokens, getAccessToken } from '../utils/auth.js';
@@ -7,20 +6,12 @@ function Navbar() {
     const { listItems } = useList();
     const navigate = useNavigate();
     
-    // State to track if the mobile menu is open or closed
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    
     const listCount = listItems.reduce((total, item) => total + item.quantity, 0);
     const isLoggedIn = !!getAccessToken();
 
     const handleLogout = () => {
         clearTokens();
         navigate('/login');
-    };
-
-    // Helper function to toggle the menu
-    const toggleMobileMenu = () => {
-        setIsMobileMenuOpen(!isMobileMenuOpen);
     };
 
     return (
@@ -31,14 +22,14 @@ function Navbar() {
                 <Link to="/" className="flex items-center gap-2 group">
                     <span className="text-2xl transition-transform group-hover:scale-110">✨</span>
                     <span className="text-2xl font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent tracking-tight">
-                        GenUi
+                        UiWizard
                     </span>
                 </Link>
 
                 {/* 2. Navigation & Actions Container */}
                 <div className="flex items-center gap-5 sm:gap-8">
                     
-                    {/* Main Nav Links (Logged In) - Hidden on mobile, visible on md (768px+) */}
+                    {/* Main Nav Links (Logged In) */}
                     {isLoggedIn && (
                         <div className="hidden md:flex items-center gap-6">
                             <Link to="/PostLists" className="text-sm font-semibold text-gray-600 hover:text-indigo-600 transition-colors">
@@ -84,69 +75,16 @@ function Navbar() {
                                 </Link>
                             </div>
                         ) : (
-                            <div className="flex items-center gap-2">
-                                <button 
-                                    onClick={handleLogout} 
-                                    className="text-sm font-semibold bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors hidden sm:block"
-                                >
-                                    Logout
-                                </button>
-
-                                {/* Hamburger Menu Button - Visible ONLY on small screens */}
-                                <button 
-                                    onClick={toggleMobileMenu}
-                                    className="md:hidden p-2 ml-2 text-gray-600 hover:text-indigo-600 focus:outline-none transition-colors"
-                                >
-                                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        {isMobileMenuOpen ? (
-                                            /* X Icon */
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                        ) : (
-                                            /* Hamburger Lines Icon */
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                                        )}
-                                    </svg>
-                                </button>
-                            </div>
+                            <button 
+                                onClick={handleLogout} 
+                                className="text-sm font-semibold bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors"
+                            >
+                                Logout
+                            </button>
                         )}
                     </div>
                 </div>
             </div>
-
-            {/* 3. Mobile Menu Dropdown */}
-            {/* Renders right beneath the navbar when the hamburger is clicked */}
-            {isMobileMenuOpen && isLoggedIn && (
-                <div className="md:hidden bg-white border-t border-gray-100 px-4 pt-2 pb-4 shadow-lg flex flex-col space-y-2">
-                    <Link 
-                        to="/PostLists" 
-                        onClick={toggleMobileMenu} 
-                        className="block px-3 py-2 rounded-md text-base font-semibold text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
-                    >
-                        Articles
-                    </Link>
-                    <Link 
-                        to="/CodeGenerator" 
-                        onClick={toggleMobileMenu} 
-                        className="block px-3 py-2 rounded-md text-base font-semibold text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
-                    >
-                        Generate
-                    </Link>
-                    <Link 
-                        to="/Post" 
-                        onClick={toggleMobileMenu} 
-                        className="block px-3 py-2 rounded-md text-base font-semibold text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
-                    >
-                        Create Post
-                    </Link>
-                    {/* Add logout button to mobile menu since it might be hidden on extremely small screens */}
-                    <button 
-                        onClick={() => { toggleMobileMenu(); handleLogout(); }} 
-                        className="block w-full text-left px-3 py-2 rounded-md text-base font-semibold text-rose-600 hover:bg-rose-50 transition-colors sm:hidden"
-                    >
-                        Logout
-                    </button>
-                </div>
-            )}
         </nav>
     );
 }

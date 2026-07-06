@@ -15,7 +15,7 @@ import { toast } from 'react-toastify';
 // import "./Generator.css";
 // import Select
 const CodeGenerator = () => {
-  const BASE = import.meta.env.VITE_API_BASE_URL;
+
   const options = [
     { value: 'html-css', label: 'HTML + CSS' },
     { value: 'html-tailwind', label: 'HTML + Tailwind CSS' },
@@ -110,6 +110,7 @@ const CodeGenerator = () => {
             className='mt-2'
             options={options}
             value={frameWork}
+            isDisabled={loading}
             styles={{
               control: (base) => ({
                 ...base,
@@ -117,7 +118,7 @@ const CodeGenerator = () => {
                 borderColor: "#333",
                 color: "#fff",
                 boxShadow: "none",
-                "&:hover": { borderColor: "#555" }
+                "& hover": { borderColor: "#555" }
               }),
               menu: (base) => ({
                 ...base,
@@ -132,7 +133,7 @@ const CodeGenerator = () => {
                     ? "#222"
                     : "#111",
                 color: "#fff",
-                "&:active": { backgroundColor: "#444" }
+                "& active": { backgroundColor: "#444" }
               }),
               singleValue: (base) => ({ ...base, color: "#fff" }),
               placeholder: (base) => ({ ...base, color: "#aaa" }),
@@ -145,7 +146,8 @@ const CodeGenerator = () => {
           <textarea
             onChange={(e) => setPrompt(e.target.value)}
             value={prompt}
-            className='w-full min-h-[200px] rounded-xl bg-[#09090B] mt-3 p-3 text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-purple-500 resize-none'
+            disabled={loading}
+            className='w-full min-h-[200px] rounded-xl bg-[#09090B] mt-3 p-3 text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-purple-500 resize-none disabled:opacity-50'
             placeholder="Describe your component in detail and AI will generate it..."
           ></textarea>
 
@@ -153,7 +155,8 @@ const CodeGenerator = () => {
             <p className='text-gray-400 text-sm'>Click on generate button to get your code</p>
             <button
               onClick={getResponse}
-              className="flex items-center p-3 rounded-lg border-0 bg-gradient-to-r from-purple-400 to-purple-600 px-5 gap-2 transition-all hover:opacity-80 hover:scale-105 active:scale-95"
+              disabled={loading}
+              className={`flex items-center p-3 rounded-lg border-0 bg-gradient-to-r from-purple-400 to-purple-600 px-5 gap-2 transition-all hover:opacity-80 hover:scale-105 active:scale-95 ${loading ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
             >
               {loading ? <ClipLoader color="white" size="18px"/> : <BsStars/>}
               Generate
