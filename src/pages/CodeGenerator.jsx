@@ -37,7 +37,7 @@ const CodeGenerator = () => {
     const match = response.match(/```(?:\w+)?\n?([\s\S]*?)```/);
     return match ? match[1].trim() : response.trim();
   }
-
+  const BASE = import.meta.env.VITE_DJANGO_BASE_URL;
   const openai = new OpenAI({
     apiKey: 'backend-handled',
     baseURL: `${BASE}/api/nvidia-proxy`,
