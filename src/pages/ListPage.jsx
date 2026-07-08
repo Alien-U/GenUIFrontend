@@ -67,7 +67,7 @@ function ListPage() {
                                     <div className="w-full md:w-60 md:min-w-60 h-48 md:h-auto relative overflow-hidden bg-slate-100 border-b md:border-b-0 md:border-r border-gray-100">
                                         {item.post_image ? (
                                             <img
-                                                src={`${BASEURL}${item.post_image}`}
+                                                src={item.post_image}
                                                 alt="Component Preview"
                                                 className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
                                             />

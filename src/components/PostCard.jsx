@@ -39,11 +39,15 @@ function PostCard({ post }) {
     <div className="bg-white rounded-2xl border border-gray-200/75 shadow-sm hover:shadow-md hover:border-indigo-300 hover:scale-[1.01] transition-all duration-300 overflow-hidden flex flex-col group relative">
       {/* Image Container */}
       <div className="w-full h-48 bg-slate-50 overflow-hidden relative border-b border-gray-100">
-        <img
-          src={`${BASEURL}${post.image}`}
-          alt="Component Preview"
-          className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
-        />
+        {post.image_url ? (
+          <img
+            src={post.image_url}
+            alt="Component Preview"
+            className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-gray-300 text-sm">No Preview</div>
+        )}
 
         {/* Floating Heart Icon */}
         <button

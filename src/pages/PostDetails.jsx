@@ -106,13 +106,15 @@ function PostDetails() {
           </div>
 
           {/* 2. Image */}
+          {post.image_url && (
           <div className="mb-10 w-full overflow-hidden rounded-2xl shadow-sm border border-gray-150">
             <img
-              src={`${post.image}`}
+              src={post.image_url}
               alt={post.name || "Post Image"}
               className="w-full h-auto max-h-[500px] object-cover hover:scale-105 transition-transform duration-500 ease-in-out"
             />
           </div>
+          )}
 
           {/* 3. Code Block Content */}
           <div className="mb-12">

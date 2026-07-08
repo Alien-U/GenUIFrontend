@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 
+const BASE = import.meta.env.VITE_DJANGO_BASE_URL;
+
 const Post = () => {
   const [text, setText] = useState('');
   const [image, setImage] = useState(null);
@@ -29,11 +31,10 @@ const Post = () => {
     try {
       const response = await fetch(`${BASE}/api/posts/create/`, {
         method: 'POST',
-        // headers: {
-        // If your backend is protected by JWT, this is mandatory
-        // 'Authorization': `Bearer ${token}`,
-        // WARNING: Do NOT set 'Content-Type'. The browser handles it for FormData.
-        // },
+        headers: {
+          // WARNING: Do NOT set 'Content-Type'. The browser handles it for FormData.
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        },
         body: formData,
       });
 
